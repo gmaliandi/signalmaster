@@ -88,7 +88,7 @@ module.exports = function (server, config) {
                 name = uuid();
             }
             // check if exists
-            if (io.sockets.adapter.rooms[name].length) {
+            if (io.sockets.adapter.rooms[name]) {
                 safeCb(cb)('taken');
             } else {
                 join(name);
