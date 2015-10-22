@@ -1,6 +1,8 @@
 var socketIO = require('socket.io'),
     uuid = require('node-uuid'),
     crypto = require('crypto');
+    
+var resources = {};
 
 module.exports = function (server, config) {
     var io = socketIO.listen(server);
@@ -11,7 +13,7 @@ module.exports = function (server, config) {
     }
 
     io.sockets.on('connection', function (client) {
-        client.resources = {
+        resources[client.id] = {
             screen: false,
             video: true,
             audio: false
@@ -29,11 +31,11 @@ module.exports = function (server, config) {
         });
 
         client.on('shareScreen', function () {
-            client.resources.screen = true;
+            resources[client.id].screen = true;
         });
 
         client.on('unshareScreen', function (type) {
-            client.resources.screen = false;
+            resources[client.id].screen = false;
             removeFeed('screen');
         });
 
@@ -125,18 +127,23 @@ module.exports = function (server, config) {
 
 
     function describeRoom(name) {
-        var clients = io.sockets.adapter.rooms[name];
         var result = {
             clients: {}
         };
-        clients.forEach(function (client) {
-            result.clients[client.id] = client.resources;
-        });
+        
+        var clients = io.sockets.adapter.rooms[name];
+        if(clients) {
+            Object.keys(clients).forEach(function (client) {
+                result.clients[client.id] = resources[client.id];
+            });
+        }
+        
         return result;
     }
 
     function clientsInRoom(name) {
-        return io.sockets.adapter.rooms[name].length;
+        var room = io.sockets.adapter.rooms[name];
+        return room ? Object.keys(room).length : 0;
     }
 
 };
