@@ -134,7 +134,7 @@ module.exports = function (server, config) {
         var clients = io.sockets.adapter.rooms[name];
         if(clients) {
             Object.keys(clients).forEach(function (client) {
-                result.clients[client.id] = resources[client.id];
+                result.clients[client] = resources[client];
             });
         }
         
