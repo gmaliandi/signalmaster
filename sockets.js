@@ -52,6 +52,8 @@ module.exports = function (server, config) {
                     client.room = undefined;
                 }
             }
+            
+            delete resources[client.id];
         }
 
         function join(name, cb) {
