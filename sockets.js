@@ -52,8 +52,6 @@ module.exports = function (server, config) {
                     client.room = undefined;
                 }
             }
-            
-            delete resources[client.id];
         }
 
         function join(name, cb) {
@@ -76,6 +74,7 @@ module.exports = function (server, config) {
         // event type string of "socket end" gets passed too.
         client.on('disconnect', function () {
             removeFeed();
+            delete resources[client.id];
         });
         client.on('leave', function () {
             removeFeed();
